@@ -33,6 +33,7 @@ func sendPingMessages(player *player.Player) {
 
 func handlePong(player *player.Player) {
 	player.Conn.SetPongHandler(func(appData string) error {
+		slog.Info("Received pong message", slog.String("message", appData))
 		player.Latency = time.Since(player.LastPingTime)
 		return nil
 	})
