@@ -112,12 +112,38 @@ func startNewGameSession(p1, p2 *player.Player) {
 		}
 	}()
 
-		p1.Conn.WriteJSON(map[string]string{
-			"message": "Game session started",
-		})
+	go broadcasterReader(p1, p2)
+	go broadcasterReader(p2, p1)
+}
 
-		p2.Conn.WriteJSON(map[string]string{
-			"message": "Game session started",
-		})
-	}()
+func broadcasterReader(player *player.Player, opponent *player.Player) {
+	for {
+		select {
+		case <-player.Ctx.Done():
+			slog.Info("Stopping read for player", slog.String("name", player.Name))
+			opponent.Cancel()
+			return
+		default:
+			_, msg, err := player.Conn.ReadMessage()
+			if err != nil {
+				slog.Error("Error reading player input", slog.Any("error", err))
+			}
+
+			var input map[string]any
+			if err := json.Unmarshal(msg, &input); err != nil {
+				slog.Error("Invalid input from player", slog.Any("error", err))
+				continue
+			}
+
+			slog.Info("Player input received", slog.Any("action", input), slog.String("player", player.Name))
+
+			err = opponent.Conn.WriteJSON(map[string]any{
+				"message": "Opponent moved",
+				"input":   input,
+			})
+			if err != nil {
+				slog.Error("Error sending input to opponent", slog.Any("error", err))
+			}
+		}
+	}
 }
