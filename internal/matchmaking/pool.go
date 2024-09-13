@@ -1,23 +1,30 @@
 package matchmaking
 
 import (
+	"encoding/json"
+	"log/slog"
 	"sync"
 	"time"
 
 	"github.com/reneepc/pongo-server/internal/game/player"
 )
 
-const MaxWaitTime = 30 * time.Second
-
 type PlayerPool struct {
 	sync.Mutex
-	Players []*player.Player
+	Players     []*player.Player
+	matchSignal chan struct{}
 }
 
 func NewPlayerPool() *PlayerPool {
-	return &PlayerPool{
+	pool := &PlayerPool{
 		Players: make([]*player.Player, 0),
 	}
+
+	pool.matchSignal = make(chan struct{})
+
+	go pool.StartMatchmaking()
+
+	return pool
 }
 
 func (p *PlayerPool) AddPlayer(player *player.Player) {
@@ -27,6 +34,8 @@ func (p *PlayerPool) AddPlayer(player *player.Player) {
 	player.JoinTime = time.Now()
 
 	p.Players = append(p.Players, player)
+
+	p.matchSignal <- struct{}{}
 }
 
 func (p *PlayerPool) RemovePlayer(player *player.Player) {
