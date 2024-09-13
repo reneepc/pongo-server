@@ -66,18 +66,51 @@ func (p *PlayerPool) FindMatch() (*player.Player, *player.Player) {
 
 func (p *PlayerPool) StartMatchmaking() {
 	for {
+		<-p.matchSignal
+
 		p1, p2 := p.FindMatch()
-		if p1 != nil && p2 != nil {
-			startNewGameSession(p1, p2)
+		if p1 == nil || p2 == nil {
+			continue
 		}
 
-		time.Sleep(1 * time.Second)
+		startNewGameSession(p1, p2)
+
 	}
 }
 
 func startNewGameSession(p1, p2 *player.Player) {
 	go func() {
-		time.Sleep(3 * time.Second)
+		for {
+			select {
+			case <-p1.Ctx.Done():
+				slog.Warn("Player 1 disconnected", slog.String("name", p1.Name))
+				p2.Cancel()
+				return
+			case <-p2.Ctx.Done():
+				slog.Warn("Player 2 disconnected", slog.String("name", p2.Name))
+				p1.Cancel()
+				return
+			case <-time.After(3 * time.Second):
+				err := p1.Conn.WriteJSON(map[string]string{
+					"message":       "Game is running",
+					"ping":          p1.Latency.String(),
+					"opponent_ping": p2.Latency.String(),
+				})
+				if err != nil {
+					slog.Error("Failed to write to player", slog.String("name", p1.Name), slog.Any("error", err))
+				}
+
+				err = p2.Conn.WriteJSON(map[string]string{
+					"message":       "Game is running",
+					"ping":          p2.Latency.String(),
+					"opponent_ping": p1.Latency.String(),
+				})
+				if err != nil {
+					slog.Error("Failed to write to player", slog.String("name", p2.Name), slog.Any("error", err))
+				}
+			}
+		}
+	}()
 
 		p1.Conn.WriteJSON(map[string]string{
 			"message": "Game session started",
