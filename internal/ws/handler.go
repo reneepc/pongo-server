@@ -45,7 +45,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slog.Error("New player connected", slog.String("name", playerInfo.Name))
+	slog.Info("New player connected", slog.String("name", playerInfo.Name))
 
 	newPlayer := model.NewPlayer(conn, playerInfo.Name)
 
