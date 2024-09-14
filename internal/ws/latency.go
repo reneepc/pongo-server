@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/reneepc/pongo-server/internal/game/player"
+	"github.com/reneepc/pongo-server/internal/game"
 )
 
-func (s Server) measureLatency(player *player.Player) {
+func (s Server) measureLatency(player *game.NetPlayer) {
 	handlePong(player)
 	go sendPingMessages(player)
 }
 
-func sendPingMessages(player *player.Player) {
+func sendPingMessages(player *game.NetPlayer) {
 	for {
 		select {
 		case <-player.Ctx.Done():
@@ -31,7 +31,7 @@ func sendPingMessages(player *player.Player) {
 	}
 }
 
-func handlePong(player *player.Player) {
+func handlePong(player *game.NetPlayer) {
 	player.Conn.SetPongHandler(func(appData string) error {
 		slog.Info("Received pong message", slog.String("message", appData))
 		player.Latency = time.Since(player.LastPingTime)

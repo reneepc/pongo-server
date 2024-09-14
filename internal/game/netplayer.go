@@ -1,4 +1,4 @@
-package player
+package game
 
 import (
 	"context"
@@ -7,20 +7,20 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type Player struct {
+type NetPlayer struct {
 	Conn         *websocket.Conn    `json:"-"`
 	Name         string             `json:"name"`
 	Latency      time.Duration      `json:"latency"`
 	JoinTime     time.Time          `json:"-"`
-	LastPingTime time.Time          `json:"-"`
+	LastPingTime time.Time          `json:"ping"`
 	Ctx          context.Context    `json:"-"`
 	Cancel       context.CancelFunc `json:"-"`
 }
 
-func NewPlayer(conn *websocket.Conn, name string) *Player {
+func NewNetPlayer(conn *websocket.Conn, name string) *NetPlayer {
 	ctx, cancel := context.WithCancel(context.Background())
 
-	player := &Player{
+	player := &NetPlayer{
 		Conn:     conn,
 		Name:     name,
 		Latency:  0,

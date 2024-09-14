@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	model "github.com/reneepc/pongo-server/internal/game/player"
+	"github.com/reneepc/pongo-server/internal/game"
 	"github.com/reneepc/pongo-server/internal/matchmaking"
 )
 
@@ -47,7 +47,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("New player connected", slog.String("name", playerInfo.Name))
 
-	newPlayer := model.NewPlayer(conn, playerInfo.Name)
+	newPlayer := game.NewNetPlayer(conn, playerInfo.Name)
 
 	s.measureLatency(newPlayer)
 	s.handleClosedConnection(newPlayer)
@@ -55,7 +55,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 	s.PlayerPool.AddPlayer(newPlayer)
 }
 
-func (s *Server) handleClosedConnection(player *model.Player) {
+func (s *Server) handleClosedConnection(player *game.NetPlayer) {
 	player.Conn.SetCloseHandler(func(code int, text string) error {
 		slog.Info("Connection closed", slog.String("name", player.Name))
 		player.Cancel()

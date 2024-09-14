@@ -6,18 +6,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/reneepc/pongo-server/internal/game/player"
+	"github.com/reneepc/pongo-server/internal/game"
 )
 
 type PlayerPool struct {
 	sync.Mutex
-	Players     []*player.Player
+	Players     []*game.NetPlayer
 	matchSignal chan struct{}
 }
 
 func NewPlayerPool() *PlayerPool {
 	pool := &PlayerPool{
-		Players: make([]*player.Player, 0),
+		Players: make([]*game.NetPlayer, 0),
 	}
 
 	pool.matchSignal = make(chan struct{})
@@ -27,7 +27,7 @@ func NewPlayerPool() *PlayerPool {
 	return pool
 }
 
-func (p *PlayerPool) AddPlayer(player *player.Player) {
+func (p *PlayerPool) AddPlayer(player *game.NetPlayer) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -38,7 +38,7 @@ func (p *PlayerPool) AddPlayer(player *player.Player) {
 	p.matchSignal <- struct{}{}
 }
 
-func (p *PlayerPool) RemovePlayer(player *player.Player) {
+func (p *PlayerPool) RemovePlayer(player *game.NetPlayer) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -50,7 +50,7 @@ func (p *PlayerPool) RemovePlayer(player *player.Player) {
 	}
 }
 
-func (p *PlayerPool) FindMatch() (*player.Player, *player.Player) {
+func (p *PlayerPool) FindMatch() (*game.NetPlayer, *game.NetPlayer) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -78,7 +78,7 @@ func (p *PlayerPool) StartMatchmaking() {
 	}
 }
 
-func startNewGameSession(p1, p2 *player.Player) {
+func startNewGameSession(p1, p2 *game.NetPlayer) {
 	go func() {
 		for {
 			select {
@@ -116,7 +116,7 @@ func startNewGameSession(p1, p2 *player.Player) {
 	go broadcasterReader(p2, p1)
 }
 
-func broadcasterReader(player *player.Player, opponent *player.Player) {
+func broadcasterReader(player *game.NetPlayer, opponent *game.NetPlayer) {
 	for {
 		select {
 		case <-player.Ctx.Done():
