@@ -12,7 +12,7 @@ type NetPlayer struct {
 	Name         string             `json:"name"`
 	Latency      time.Duration      `json:"latency"`
 	JoinTime     time.Time          `json:"-"`
-	LastPingTime time.Time          `json:"ping"`
+	LastPingTime time.Time          `json:"-"`
 	Ctx          context.Context    `json:"-"`
 	Cancel       context.CancelFunc `json:"-"`
 }
