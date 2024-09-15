@@ -11,13 +11,13 @@ import (
 
 type PlayerPool struct {
 	sync.Mutex
-	Players     []*game.NetPlayer
+	Players     []*game.Network
 	matchSignal chan struct{}
 }
 
 func NewPlayerPool() *PlayerPool {
 	pool := &PlayerPool{
-		Players: make([]*game.NetPlayer, 0),
+		Players: make([]*game.Network, 0),
 	}
 
 	pool.matchSignal = make(chan struct{})
@@ -27,7 +27,7 @@ func NewPlayerPool() *PlayerPool {
 	return pool
 }
 
-func (p *PlayerPool) AddPlayer(player *game.NetPlayer) {
+func (p *PlayerPool) AddPlayer(player *game.Network) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -38,7 +38,7 @@ func (p *PlayerPool) AddPlayer(player *game.NetPlayer) {
 	p.matchSignal <- struct{}{}
 }
 
-func (p *PlayerPool) RemovePlayer(player *game.NetPlayer) {
+func (p *PlayerPool) RemovePlayer(player *game.Network) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -50,7 +50,7 @@ func (p *PlayerPool) RemovePlayer(player *game.NetPlayer) {
 	}
 }
 
-func (p *PlayerPool) FindMatch() (*game.NetPlayer, *game.NetPlayer) {
+func (p *PlayerPool) FindMatch() (*game.Network, *game.Network) {
 	p.Lock()
 	defer p.Unlock()
 
@@ -74,11 +74,10 @@ func (p *PlayerPool) StartMatchmaking() {
 		}
 
 		startNewGameSession(p1, p2)
-
 	}
 }
 
-func startNewGameSession(p1, p2 *game.NetPlayer) {
+func startNewGameSession(p1, p2 *game.Network) {
 	go func() {
 		for {
 			select {
@@ -116,7 +115,7 @@ func startNewGameSession(p1, p2 *game.NetPlayer) {
 	go broadcasterReader(p2, p1)
 }
 
-func broadcasterReader(player *game.NetPlayer, opponent *game.NetPlayer) {
+func broadcasterReader(player *game.Network, opponent *game.Network) {
 	for {
 		select {
 		case <-player.Ctx.Done():

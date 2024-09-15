@@ -47,7 +47,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("New player connected", slog.String("name", playerInfo.Name))
 
-	newPlayer := game.NewNetPlayer(conn, playerInfo.Name)
+	newPlayer := game.NewNetwork(conn, playerInfo.Name)
 
 	s.measureLatency(newPlayer)
 	s.handleClosedConnection(newPlayer)
@@ -55,7 +55,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 	s.PlayerPool.AddPlayer(newPlayer)
 }
 
-func (s *Server) handleClosedConnection(player *game.NetPlayer) {
+func (s *Server) handleClosedConnection(player *game.Network) {
 	player.Conn.SetCloseHandler(func(code int, text string) error {
 		slog.Info("Connection closed", slog.String("name", player.Name))
 		player.Cancel()

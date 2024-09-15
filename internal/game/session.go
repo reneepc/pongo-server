@@ -1,39 +1,36 @@
 package game
 
 import (
+	"encoding/json"
+	"log/slog"
 	"time"
 
 	"github.com/gandarez/pong-multiplayer-go/pkg/engine/ball"
 	"github.com/gandarez/pong-multiplayer-go/pkg/engine/level"
-	"github.com/gandarez/pong-multiplayer-go/pkg/engine/player"
+	"github.com/gandarez/pong-multiplayer-go/pkg/geometry"
+	"github.com/gorilla/websocket"
 )
 
-type Player struct {
-	BasePlayer player.Player
-	Network    NetPlayer
-	Score      int
-}
-
 type GameSession struct {
-	Ball    ball.Ball
-	Level   level.Level
-	Player1 Player
-	Player2 Player
+	Ball    *ball.Ball
+	Level   *level.Level
+	Player1 *Player
+	Player2 *Player
+	Ticker  *time.Ticker
 }
 
 func (session *GameSession) Start() {
-	ticker := time.NewTicker(time.Second / 60)
-	defer ticker.Stop()
+	session.Ticker = time.NewTicker(time.Second / 60)
+	defer session.Ticker.Stop()
 
 	for {
 		select {
-		// TODO: Handle players disconnection
 		case <-session.Player1.Network.Ctx.Done():
 			session.Player2.Network.Cancel()
 			return
 		case <-session.Player2.Network.Ctx.Done():
 			session.Player1.Network.Cancel()
-		case <-ticker.C:
+		case <-session.Ticker.C:
 			session.Update()
 			session.BroadcastGameState()
 		}
@@ -41,7 +38,68 @@ func (session *GameSession) Start() {
 }
 
 func (session *GameSession) Update() {
+	session.Player1.ProcessInputs()
+	session.Player2.ProcessInputs()
+
+	session.Ball.Update(session.Player1.BasePlayer.Bounds(), session.Player2.BasePlayer.Bounds())
+
+	if scored, scorer := session.Ball.CheckGoal(); scored {
+		session.HandleScore(scorer)
+	}
 }
 
 func (session *GameSession) BroadcastGameState() {
+	state := GameState{
+		BallPosition: session.Ball.Position(),
+		Player1: PlayerState{
+			Position: session.Player1.BasePlayer.Position(),
+			Score:    session.Player1.Score,
+			Ping:     session.Player1.Network.Latency,
+		},
+		Player2: PlayerState{
+			Position: session.Player2.BasePlayer.Position(),
+			Score:    session.Player2.Score,
+			Ping:     session.Player2.Network.Latency,
+		},
+	}
+
+	message, err := json.Marshal(state)
+	if err != nil {
+		slog.Error("Error marshalling game state", slog.Any("error", err))
+		return
+	}
+
+	session.sendToPlayer(session.Player1, message)
+	session.sendToPlayer(session.Player2, message)
+}
+
+func (session *GameSession) sendToPlayer(player *Player, message []byte) {
+	if err := player.Network.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
+		slog.Error("Error writing to player", slog.Any("error", err))
+	}
+}
+
+func (session *GameSession) HandleDisconnection(disconnectedPlayer *Player) {
+	var remainingPlayer *Player
+	if disconnectedPlayer == session.Player1 {
+		remainingPlayer = session.Player2
+	} else {
+		remainingPlayer = session.Player1
+	}
+
+	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.Name))
+
+	remainingPlayer.Network.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Opponent disconnected"))
+	remainingPlayer.Network.Conn.Close()
+	remainingPlayer.Network.Cancel()
+}
+
+func (session *GameSession) HandleScore(scorer geometry.Side) {
+	if scorer == geometry.Left {
+		session.Player1.Score++
+	} else {
+		session.Player2.Score++
+	}
+
+	session.Ball.Reset(scorer)
 }

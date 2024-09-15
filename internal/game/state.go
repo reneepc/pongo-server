@@ -1,6 +1,10 @@
 package game
 
-import "github.com/gandarez/pong-multiplayer-go/pkg/geometry"
+import (
+	"time"
+
+	"github.com/gandarez/pong-multiplayer-go/pkg/geometry"
+)
 
 type GameState struct {
 	BallPosition geometry.Vector `json:"ball_position"`
@@ -11,5 +15,5 @@ type GameState struct {
 type PlayerState struct {
 	Position geometry.Vector `json:"position"`
 	Score    int             `json:"score"`
-	Ping     int             `json:"ping"`
+	Ping     time.Duration   `json:"ping"`
 }

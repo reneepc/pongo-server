@@ -8,12 +8,12 @@ import (
 	"github.com/reneepc/pongo-server/internal/game"
 )
 
-func (s Server) measureLatency(player *game.NetPlayer) {
+func (s Server) measureLatency(player *game.Network) {
 	handlePong(player)
 	go sendPingMessages(player)
 }
 
-func sendPingMessages(player *game.NetPlayer) {
+func sendPingMessages(player *game.Network) {
 	for {
 		select {
 		case <-player.Ctx.Done():
@@ -31,7 +31,7 @@ func sendPingMessages(player *game.NetPlayer) {
 	}
 }
 
-func handlePong(player *game.NetPlayer) {
+func handlePong(player *game.Network) {
 	player.Conn.SetPongHandler(func(appData string) error {
 		slog.Info("Received pong message", slog.String("message", appData))
 		player.Latency = time.Since(player.LastPingTime)
