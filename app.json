@@ -1,0 +1,8 @@
+{
+  "name": "Pongo Server",
+  "description": "Server aiming to support the multiplayer mode of the classic pong game",
+  "buildpacks": [
+    { "url": "heroku-community/apt" },
+    { "url": "heroku/go" }
+  ]
+}
