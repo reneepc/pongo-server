@@ -18,15 +18,9 @@ func (player *Player) StartInputReader() {
 			case <-player.Network.Ctx.Done():
 				return
 			default:
-				_, msg, err := player.Network.Conn.ReadMessage()
-				if err != nil {
-					slog.Error("Error reading player input", slog.Any("error", err))
-					continue
-				}
-
 				var input PlayerInput
-				if err := json.Unmarshal(msg, &input); err != nil {
-					slog.Error("Error unmarshalling player input", slog.Any("error", err))
+				if err := player.Network.Conn.ReadJSON(&input); err != nil {
+					slog.Error("Error reading player input", slog.Any("error", err))
 					continue
 				}
 

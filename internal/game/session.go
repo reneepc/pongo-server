@@ -7,15 +7,32 @@ import (
 	"github.com/gandarez/pong-multiplayer-go/pkg/engine/ball"
 	"github.com/gandarez/pong-multiplayer-go/pkg/engine/level"
 	"github.com/gandarez/pong-multiplayer-go/pkg/geometry"
-	"github.com/gorilla/websocket"
+	"github.com/google/uuid"
+)
+
+const (
+	MaxScore     = 10
+	ScreenWidth  = 640
+	ScreenHeight = 480
 )
 
 type GameSession struct {
-	Ball    *ball.Ball
-	Level   *level.Level
-	Player1 *Player
-	Player2 *Player
-	Ticker  *time.Ticker
+	ID      string
+	player1 *Player
+	player2 *Player
+	ball    *ball.Ball
+	level   level.Level
+	ticker  *time.Ticker
+}
+
+func NewGameSession(player1 *Player, player2 *Player) *GameSession {
+	return &GameSession{
+		ID:      uuid.NewString(),
+		player1: player1,
+		player2: player2,
+		ball:    ball.New(geometry.Left, ScreenWidth, ScreenHeight, level.Medium),
+		level:   level.Medium,
+	}
 }
 
 func (session *GameSession) Start() {

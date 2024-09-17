@@ -3,6 +3,7 @@ package ws
 import (
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/reneepc/pongo-server/internal/game"
@@ -32,16 +33,13 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, msg, err := conn.ReadMessage()
-	if err != nil {
-		slog.Error("Failed to read message", slog.Any("error", err))
-		return
-	}
-
-	playerInfo, err := PlayerInfoFromMsg(msg)
-	if err != nil {
-		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
-		slog.Error("Invalid player info", slog.Any("error", err))
+	var playerInfo PlayerInfo
+	if err := conn.ReadJSON(&playerInfo); err != nil {
+		err := conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Failed to read player info"), time.Now().Add(time.Second))
+		if err != nil {
+			slog.Error("Failed to write close message after reading wrongly formatted player info", slog.Any("error", err))
+		}
+		slog.Error("Failed to read player info", slog.Any("error", err))
 		return
 	}
 

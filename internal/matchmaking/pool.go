@@ -77,71 +77,15 @@ func (p *PlayerPool) StartMatchmaking() {
 }
 
 func startNewGameSession(p1, p2 *game.Network) {
-	go func() {
-		for {
-			select {
-			case <-p1.Ctx.Done():
-				slog.Warn("Player 1 disconnected", slog.String("name", p1.Name))
-				p2.Cancel()
-				return
-			case <-p2.Ctx.Done():
-				slog.Warn("Player 2 disconnected", slog.String("name", p2.Name))
-				p1.Cancel()
-				return
-			case <-time.After(3 * time.Second):
-				err := p1.Conn.WriteJSON(map[string]string{
-					"message":       "Game is running",
-					"ping":          p1.Latency.String(),
-					"opponent_ping": p2.Latency.String(),
-				})
-				if err != nil {
-					slog.Error("Failed to write to player", slog.String("name", p1.Name), slog.Any("error", err))
-				}
+	player1 := game.NewPlayer(p1, geometry.Left, game.ScreenWidth, game.ScreenHeight)
+	player2 := game.NewPlayer(p2, geometry.Right, game.ScreenWidth, game.ScreenHeight)
 
-				err = p2.Conn.WriteJSON(map[string]string{
-					"message":       "Game is running",
-					"ping":          p2.Latency.String(),
-					"opponent_ping": p1.Latency.String(),
-				})
-				if err != nil {
-					slog.Error("Failed to write to player", slog.String("name", p2.Name), slog.Any("error", err))
-				}
-			}
-		}
-	}()
+	session := game.NewGameSession(player1, player2)
 
-	go broadcasterReader(p1, p2)
-	go broadcasterReader(p2, p1)
-}
+	game.GetSessionManager().AddSession(session.ID, session)
 
-func broadcasterReader(player *game.Network, opponent *game.Network) {
-	for {
-		select {
-		case <-player.Ctx.Done():
-			slog.Info("Stopping read for player", slog.String("name", player.Name))
-			opponent.Cancel()
-			return
-		default:
-			_, msg, err := player.Conn.ReadMessage()
-			if err != nil {
-				slog.Error("Error reading player input", slog.Any("error", err))
-			}
+	go session.Start()
 
-			var input map[string]any
-			if err := json.Unmarshal(msg, &input); err != nil {
-				slog.Error("Invalid input from player", slog.Any("error", err))
-				continue
-			}
-
-			slog.Info("Player input received", slog.Any("action", input), slog.String("player", player.Name))
-
-			err = opponent.Conn.WriteJSON(map[string]any{
-				"message": "Opponent moved",
-				"input":   input,
-			})
-			if err != nil {
-				slog.Error("Error sending input to opponent", slog.Any("error", err))
-			}
-		}
-	}
+	player1.StartInputReader()
+	player2.StartInputReader()
 }
