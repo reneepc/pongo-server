@@ -4,8 +4,8 @@ github.com/ebitengine/hideconsole v1.0.0 h1:5J4U0kXF+pv/DhiXt5/lTz0eO5ogJ1iXb8Yj
 github.com/ebitengine/hideconsole v1.0.0/go.mod h1:hTTBTvVYWKBuxPr7peweneWdkUwEuHuB3C1R/ielR1A=
 github.com/ebitengine/purego v0.7.0 h1:HPZpl61edMGCEW6XK2nsR6+7AnJ3unUxpTZBkkIXnMc=
 github.com/ebitengine/purego v0.7.0/go.mod h1:ah1In8AOtksoNK6yk5z1HTJeUkC1Ez4Wk2idgGslMwQ=
-github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.3.0.20240913004101-8fd08f8a0aec h1:DXm3+VblcAEmiVrHHxSxcucQD3IAplq4lvfMhL1w2Do=
-github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.3.0.20240913004101-8fd08f8a0aec/go.mod h1:8FR6DNFfwEnD6JcDwVipBeKexjKfAbIQZC+PpvF1rnw=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/hajimehoshi/ebiten/v2 v2.7.8 h1:QrlvF2byCzMuDsbxFReJkOCbM3O2z1H/NKQaGcA8PKk=
