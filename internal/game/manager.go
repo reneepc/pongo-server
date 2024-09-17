@@ -2,9 +2,15 @@ package game
 
 import "sync"
 
+var sessionManager = NewSessionManager()
+
 type SessionManager struct {
 	Sessions map[string]*GameSession
 	sync.Mutex
+}
+
+func GetSessionManager() *SessionManager {
+	return sessionManager
 }
 
 func NewSessionManager() *SessionManager {
