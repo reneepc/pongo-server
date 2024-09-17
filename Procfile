@@ -1,1 +1,1 @@
-web: web: Xvfb :99 -screen 0 1024x768x24 & ./bin/pongo-server
+web: Xvfb :99 -screen 0 1024x768x24 & ./bin/pongo-server
