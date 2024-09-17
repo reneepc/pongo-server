@@ -14,7 +14,7 @@ build-client:
 	go build -o $(BUILD_DIR)/$(BINARY_NAME_CLIENT) mock/client.go
 
 run-client:
-	go run mock/client.go --server=localhost:8080 --name=TestPlayer
+	go run mock/client.go --server="pongo-server-42917a26f363.herokuapp.com:80" --name=TestPlayer
 
 test:
 	go test -v ./...
