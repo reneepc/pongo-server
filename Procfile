@@ -1,1 +1,1 @@
-web: ./build/pongo-server
+web: ./bin/pongo-server
