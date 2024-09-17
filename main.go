@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -13,19 +12,20 @@ import (
 )
 
 func main() {
-	port := flag.String("port", "8080", "The port on which to run the server")
-
-	flag.Parse()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 
-	slog.Info("Starting Pong Multiplyaer Server", slog.String("port", *port))
+	slog.Info("Starting Pong Multiplyaer Server", slog.String("port", port))
 
 	httpServer := server.New()
 	wsServer := ws.New()
 
 	go func() {
-		host := fmt.Sprintf("0.0.0.0:%s", *port)
+		host := fmt.Sprintf("0.0.0.0:%s", port)
 		err := httpServer.Start(host, wsServer)
 		if err != nil {
 			slog.Error("Error starting server", slog.Any("error", err))
