@@ -124,6 +124,8 @@ func (session *GameSession) endGame() {
 		session.player2.Won()
 		session.player1.Lost()
 	}
+
+	sessionManager.RemoveSession(session.ID)
 }
 
 func (session *GameSession) resetBall(scorer geometry.Side) {
