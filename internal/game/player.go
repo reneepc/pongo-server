@@ -74,6 +74,9 @@ func (p *Player) ProcessInputs() {
 
 func (p *Player) MoveUp() {
 	p.BasePlayer.SetPosition(p.BasePlayer.Position().Y - defaultSpeed)
+
+func (p *Player) Terminate() {
+	p.Network.Terminate()
 }
 
 func (p *Player) MoveDown() {

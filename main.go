@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gorilla/websocket"
 	"github.com/reneepc/pongo-server/internal/server"
 	"github.com/reneepc/pongo-server/internal/ws"
 )
@@ -45,8 +44,7 @@ func shutdown(s *server.Server, wsServer *ws.Server) {
 
 	slog.Info("Shutting down server")
 	for _, player := range wsServer.PlayerPool.Players {
-		player.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Server shutting down"))
-		player.Conn.Close()
+		player.Terminate()
 	}
 
 	if err := s.Shutdown(); err != nil {

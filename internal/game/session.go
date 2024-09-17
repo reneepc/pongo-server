@@ -73,25 +73,21 @@ func (session *GameSession) BroadcastGameState() {
 	session.sendToPlayer(session.Player2, message)
 }
 
-func (session *GameSession) sendToPlayer(player *Player, message []byte) {
-	if err := player.Network.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
-		slog.Error("Error writing to player", slog.Any("error", err))
-	}
-}
+func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
+	disconnectedPlayer.Terminate()
 
 func (session *GameSession) HandleDisconnection(disconnectedPlayer *Player) {
 	var remainingPlayer *Player
-	if disconnectedPlayer == session.Player1 {
-		remainingPlayer = session.Player2
+	if disconnectedPlayer == session.player1 {
+		remainingPlayer = session.player2
 	} else {
-		remainingPlayer = session.Player1
+		remainingPlayer = session.player1
 	}
 
 	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.Name))
 
-	remainingPlayer.Network.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Opponent disconnected"))
-	remainingPlayer.Network.Conn.Close()
-	remainingPlayer.Network.Cancel()
+	remainingPlayer.Network.opponentDisconnect()
+	remainingPlayer.Terminate()
 }
 
 func (session *GameSession) HandleScore(scorer geometry.Side) {
