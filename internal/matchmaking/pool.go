@@ -1,11 +1,10 @@
 package matchmaking
 
 import (
-	"encoding/json"
-	"log/slog"
 	"sync"
 	"time"
 
+	"github.com/gandarez/pong-multiplayer-go/pkg/geometry"
 	"github.com/reneepc/pongo-server/internal/game"
 )
 

@@ -14,6 +14,7 @@ type GameState struct {
 
 type PlayerState struct {
 	Position geometry.Vector `json:"position"`
+	Side     geometry.Side   `json:"side"`
 	Score    int             `json:"score"`
 	Ping     time.Duration   `json:"ping"`
 }

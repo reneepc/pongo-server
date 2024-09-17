@@ -1,7 +1,6 @@
 package game
 
 import (
-	"encoding/json"
 	"log/slog"
 	"time"
 
@@ -20,63 +19,58 @@ type GameSession struct {
 }
 
 func (session *GameSession) Start() {
-	session.Ticker = time.NewTicker(time.Second / 60)
-	defer session.Ticker.Stop()
+	session.ticker = time.NewTicker(time.Second / 60)
+	defer session.ticker.Stop()
 
 	for {
 		select {
-		case <-session.Player1.Network.Ctx.Done():
-			session.Player2.Network.Cancel()
+		case <-session.player1.Network.Ctx.Done():
+			session.handleDisconnection(session.player1)
 			return
-		case <-session.Player2.Network.Ctx.Done():
-			session.Player1.Network.Cancel()
-		case <-session.Ticker.C:
-			session.Update()
-			session.BroadcastGameState()
+		case <-session.player2.Network.Ctx.Done():
+			session.handleDisconnection(session.player2)
+		case <-session.ticker.C:
+			session.update()
+			session.broadcastGameState()
 		}
 	}
 }
 
-func (session *GameSession) Update() {
-	session.Player1.ProcessInputs()
-	session.Player2.ProcessInputs()
+func (session *GameSession) update() {
+	session.player1.ProcessInputs()
+	session.player2.ProcessInputs()
 
-	session.Ball.Update(session.Player1.BasePlayer.Bounds(), session.Player2.BasePlayer.Bounds())
+	session.ball.Update(session.player1.basePlayer.Bounds(), session.player2.basePlayer.Bounds())
 
-	if scored, scorer := session.Ball.CheckGoal(); scored {
-		session.HandleScore(scorer)
+	if scored, scorer := session.ball.CheckGoal(); scored {
+		session.handleScore(scorer)
 	}
 }
 
-func (session *GameSession) BroadcastGameState() {
+func (session *GameSession) broadcastGameState() {
 	state := GameState{
-		BallPosition: session.Ball.Position(),
+		BallPosition: session.ball.Position(),
 		Player1: PlayerState{
-			Position: session.Player1.BasePlayer.Position(),
-			Score:    session.Player1.Score,
-			Ping:     session.Player1.Network.Latency,
+			Position: session.player1.basePlayer.Position(),
+			Score:    session.player1.score,
+			Side:     session.player1.side,
+			Ping:     session.player1.Network.Latency,
 		},
 		Player2: PlayerState{
-			Position: session.Player2.BasePlayer.Position(),
-			Score:    session.Player2.Score,
-			Ping:     session.Player2.Network.Latency,
+			Position: session.player2.basePlayer.Position(),
+			Score:    session.player2.score,
+			Side:     session.player2.side,
+			Ping:     session.player2.Network.Latency,
 		},
 	}
 
-	message, err := json.Marshal(state)
-	if err != nil {
-		slog.Error("Error marshalling game state", slog.Any("error", err))
-		return
-	}
-
-	session.sendToPlayer(session.Player1, message)
-	session.sendToPlayer(session.Player2, message)
+	session.player1.Network.Send(state)
+	session.player2.Network.Send(state)
 }
 
 func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
 	disconnectedPlayer.Terminate()
 
-func (session *GameSession) HandleDisconnection(disconnectedPlayer *Player) {
 	var remainingPlayer *Player
 	if disconnectedPlayer == session.player1 {
 		remainingPlayer = session.player2
@@ -90,12 +84,35 @@ func (session *GameSession) HandleDisconnection(disconnectedPlayer *Player) {
 	remainingPlayer.Terminate()
 }
 
-func (session *GameSession) HandleScore(scorer geometry.Side) {
-	if scorer == geometry.Left {
-		session.Player1.Score++
+func (session *GameSession) handleScore(scorer geometry.Side) {
+	if session.player1.side == scorer {
+		session.player1.score++
 	} else {
-		session.Player2.Score++
+		session.player2.score++
 	}
 
-	session.Ball.Reset(scorer)
+	session.resetBall(scorer)
+
+	if session.player1.score == MaxScore || session.player2.score == MaxScore {
+		session.ticker.Stop()
+		session.endGame()
+	}
+}
+
+func (session *GameSession) endGame() {
+	if session.player1.score == MaxScore {
+		session.player1.Won()
+		session.player2.Lost()
+	} else {
+		session.player2.Won()
+		session.player1.Lost()
+	}
+}
+
+func (session *GameSession) resetBall(scorer geometry.Side) {
+	if scorer == geometry.Left {
+		session.ball = session.ball.Reset(geometry.Right)
+	} else {
+		session.ball = session.ball.Reset(geometry.Left)
+	}
 }

@@ -1,7 +1,6 @@
 package game
 
 import (
-	"encoding/json"
 	"log/slog"
 	"time"
 )
@@ -35,7 +34,7 @@ func (player *Player) StartInputReader() {
 					input.Time = time.Now()
 				}
 
-				player.InputQueue <- input
+				player.inputQueue <- input
 			}
 		}
 	}()

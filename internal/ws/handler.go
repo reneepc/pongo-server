@@ -10,8 +10,8 @@ import (
 )
 
 type Server struct {
-	upgrader   websocket.Upgrader
 	PlayerPool *matchmaking.PlayerPool
+	upgrader   websocket.Upgrader
 }
 
 func New() *Server {
