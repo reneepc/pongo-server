@@ -15,7 +15,7 @@ type Player struct {
 	basePlayer *player.Player
 	Network    *Network
 	side       geometry.Side
-	score      int
+	score      int8
 	inputQueue chan PlayerInput
 }
 

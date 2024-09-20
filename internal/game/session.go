@@ -66,17 +66,17 @@ func (session *GameSession) update() {
 
 func (session *GameSession) broadcastGameState() {
 	player1 := PlayerState{
-		Position: session.player1.basePlayer.Position(),
-		Score:    session.player1.score,
-		Side:     session.player1.side,
-		Ping:     session.player1.Network.Latency,
+		PositionY: session.player1.basePlayer.Position().Y,
+		Score:     session.player1.score,
+		Side:      session.player1.side,
+		Ping:      session.player1.Network.Latency,
 	}
 
 	player2 := PlayerState{
-		Position: session.player2.basePlayer.Position(),
-		Score:    session.player2.score,
-		Side:     session.player2.side,
-		Ping:     session.player2.Network.Latency,
+		PositionY: session.player2.basePlayer.Position().Y,
+		Score:     session.player2.score,
+		Side:      session.player2.side,
+		Ping:      session.player2.Network.Latency,
 	}
 
 	session.player1.Network.Send(GameState{
