@@ -12,12 +12,15 @@ type PlayerInput struct {
 }
 
 func (player *Player) StartInputReader() {
+	ticker := time.NewTicker(1 * time.Second / 60)
+	defer ticker.Stop()
+
 	go func() {
 		for {
 			select {
 			case <-player.Network.Ctx.Done():
 				return
-			default:
+			case <-ticker.C:
 				var input PlayerInput
 				if err := player.Network.Conn.ReadJSON(&input); err != nil {
 					slog.Error("Error reading player input", slog.Any("error", err))
