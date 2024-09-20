@@ -69,14 +69,14 @@ func (session *GameSession) broadcastGameState() {
 		PositionY: session.player1.basePlayer.Position().Y,
 		Score:     session.player1.score,
 		Side:      session.player1.side,
-		Ping:      session.player1.Network.Latency,
+		Ping:      session.player1.Network.Latency.Milliseconds(),
 	}
 
 	player2 := PlayerState{
 		PositionY: session.player2.basePlayer.Position().Y,
 		Score:     session.player2.score,
 		Side:      session.player2.side,
-		Ping:      session.player2.Network.Latency,
+		Ping:      session.player2.Network.Latency.Milliseconds(),
 	}
 
 	session.player1.Network.Send(GameState{
