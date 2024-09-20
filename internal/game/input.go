@@ -24,13 +24,11 @@ func (player *Player) StartInputReader() {
 					continue
 				}
 
-				if !input.Up && !input.Down {
-					continue
-				}
-
 				if input.Time.IsZero() {
 					input.Time = time.Now()
 				}
+
+				slog.Debug("Received input", slog.Any("input", input))
 
 				player.inputQueue <- input
 			}
