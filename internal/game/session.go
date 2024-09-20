@@ -65,24 +65,30 @@ func (session *GameSession) update() {
 }
 
 func (session *GameSession) broadcastGameState() {
-	state := GameState{
-		BallPosition: session.ball.Position(),
-		Player1: PlayerState{
-			Position: session.player1.basePlayer.Position(),
-			Score:    session.player1.score,
-			Side:     session.player1.side,
-			Ping:     session.player1.Network.Latency,
-		},
-		Player2: PlayerState{
-			Position: session.player2.basePlayer.Position(),
-			Score:    session.player2.score,
-			Side:     session.player2.side,
-			Ping:     session.player2.Network.Latency,
-		},
+	player1 := PlayerState{
+		Position: session.player1.basePlayer.Position(),
+		Score:    session.player1.score,
+		Side:     session.player1.side,
+		Ping:     session.player1.Network.Latency,
 	}
 
-	session.player1.Network.Send(state)
-	session.player2.Network.Send(state)
+	player2 := PlayerState{
+		Position: session.player2.basePlayer.Position(),
+		Score:    session.player2.score,
+		Side:     session.player2.side,
+		Ping:     session.player2.Network.Latency,
+	}
+
+	session.player1.Network.Send(GameState{
+		BallPosition: session.ball.Position(),
+		Current:      player1,
+		Opponent:     player2,
+	})
+	session.player2.Network.Send(GameState{
+		BallPosition: session.ball.Position(),
+		Current:      player2,
+		Opponent:     player1,
+	})
 }
 
 func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {

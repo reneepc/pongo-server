@@ -8,8 +8,8 @@ import (
 
 type GameState struct {
 	BallPosition geometry.Vector `json:"ball_position"`
-	Player1      PlayerState     `json:"player1"`
-	Player2      PlayerState     `json:"player2"`
+	Current      PlayerState     `json:"current"`
+	Opponent     PlayerState     `json:"opponent"`
 }
 
 type PlayerState struct {
