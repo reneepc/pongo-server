@@ -2,13 +2,11 @@ package game
 
 import (
 	"log/slog"
-	"time"
 )
 
 type PlayerInput struct {
-	Up   bool      `json:"up"`
-	Down bool      `json:"down"`
-	Time time.Time `json:"time"`
+	Up   bool `json:"up"`
+	Down bool `json:"down"`
 }
 
 func (player *Player) StartInputReader() {
@@ -24,11 +22,7 @@ func (player *Player) StartInputReader() {
 					continue
 				}
 
-				if input.Time.IsZero() {
-					input.Time = time.Now()
-				}
-
-				slog.Debug("Received input", slog.Any("input", input))
+				slog.Info("Received input", slog.Any("input", input))
 
 				player.inputQueue <- input
 			}
