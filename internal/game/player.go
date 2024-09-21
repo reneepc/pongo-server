@@ -4,15 +4,19 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/gandarez/pong-multiplayer-go/pkg/engine/level"
 	"github.com/gandarez/pong-multiplayer-go/pkg/engine/player"
 	"github.com/gandarez/pong-multiplayer-go/pkg/geometry"
 	"github.com/gorilla/websocket"
 )
 
-const defaultSpeed = 4
+const (
+	defaultSpeed             = 4
+	fieldBorderWidth float64 = 10
+)
 
 type Player struct {
-	basePlayer *player.Player
+	basePlayer player.Player
 	Network    *Network
 	side       geometry.Side
 	score      int8
@@ -20,7 +24,11 @@ type Player struct {
 }
 
 func NewPlayer(network *Network, side geometry.Side, screenWidth, screenHeight float64) *Player {
-	basePlayer := player.New(network.Name, side, screenWidth, screenHeight, 10)
+	basePlayer, err := player.New(player.KindLocal, network.Name, side, screenWidth, screenHeight, pointerTo(fieldBorderWidth))
+	if err != nil {
+		// or panic?
+		slog.Error("Error creating player", slog.Any("error", err))
+	}
 
 	player := &Player{
 		basePlayer: basePlayer,
@@ -81,4 +89,8 @@ func (p *Player) MoveDown() {
 
 func (p *Player) Terminate() {
 	p.Network.Terminate()
+}
+
+func pointerTo[T float64 | geometry.Side | level.Level](v T) *T {
+	return &v
 }

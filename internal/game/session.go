@@ -11,26 +11,38 @@ import (
 )
 
 const (
-	MaxScore     = 10
-	ScreenWidth  = 640
-	ScreenHeight = 480
+	MaxScore             = 10
+	ScreenWidth  float64 = 640
+	ScreenHeight float64 = 480
 )
 
 type GameSession struct {
 	ID      string
 	player1 *Player
 	player2 *Player
-	ball    *ball.Ball
+	ball    ball.Ball
 	level   level.Level
 	ticker  *time.Ticker
 }
 
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
+	ball, err := ball.New(
+		ball.KindLocal,
+		pointerTo(geometry.Left),
+		pointerTo(ScreenWidth),
+		pointerTo(ScreenHeight),
+		pointerTo(level.Medium),
+	)
+	if err != nil {
+		// or panic?
+		slog.Error("Error creating ball", slog.Any("error", err))
+	}
+
 	return &GameSession{
 		ID:      uuid.NewString(),
 		player1: player1,
 		player2: player2,
-		ball:    ball.New(geometry.Left, ScreenWidth, ScreenHeight, level.Medium),
+		ball:    ball,
 		level:   level.Medium,
 	}
 }

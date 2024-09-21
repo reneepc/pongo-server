@@ -7,4 +7,4 @@ require (
 	github.com/gorilla/websocket v1.5.3
 )
 
-require github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.6
+require github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.7
