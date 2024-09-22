@@ -18,10 +18,10 @@ type Network struct {
 	LastPingTime time.Time          `json:"-"`
 	Ctx          context.Context    `json:"-"`
 	Cancel       context.CancelFunc `json:"-"`
-	Info
+	GameInfo
 }
 
-func NewNetwork(conn *websocket.Conn, info Info) *Network {
+func NewNetwork(conn *websocket.Conn, info GameInfo) *Network {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	player := &Network{
@@ -30,7 +30,7 @@ func NewNetwork(conn *websocket.Conn, info Info) *Network {
 		JoinTime: time.Now(),
 		Ctx:      ctx,
 		Cancel:   cancel,
-		Info:     info,
+		GameInfo: info,
 	}
 
 	return player
@@ -76,6 +76,6 @@ func (n *Network) Ping() {
 	n.LastPingTime = time.Now()
 
 	if err := n.Conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(time.Second)); err != nil {
-		slog.Error("Error while sending ping to player", slog.Any("error", err), slog.String("name", n.Info.Name))
+		slog.Error("Error while sending ping to player", slog.Any("error", err), slog.String("name", n.GameInfo.Name))
 	}
 }

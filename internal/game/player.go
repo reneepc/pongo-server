@@ -20,7 +20,7 @@ type Player struct {
 }
 
 func NewPlayer(network *Network, side geometry.Side) *Player {
-	basePlayer := player.NewNetwork(network.Info.Name, side, float64(network.Info.ScreenWidth), float64(network.Info.ScreenHeight))
+	basePlayer := player.NewLocal(network.Name, side, float64(network.ScreenWidth), float64(network.ScreenHeight), float64(network.FieldBorderWidth))
 
 	player := &Player{
 		basePlayer: basePlayer,

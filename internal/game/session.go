@@ -20,11 +20,18 @@ type GameSession struct {
 }
 
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
+	var nextSide geometry.Side
+	if player1.side == geometry.Left {
+		nextSide = geometry.Right
+	} else {
+		nextSide = geometry.Left
+	}
+
 	return &GameSession{
 		ID:      uuid.NewString(),
 		player1: player1,
 		player2: player2,
-		ball:    ball.NewNetwork(),
+		ball:    ball.NewLocal(nextSide, float64(player1.ScreenWidth), float64(player1.ScreenHeight), level.Medium),
 		level:   level.Medium,
 	}
 }
@@ -108,7 +115,7 @@ func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
 		remainingPlayer = session.player1
 	}
 
-	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.Info.Name))
+	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.GameInfo.Name))
 
 	remainingPlayer.Network.opponentDisconnect()
 	remainingPlayer.Terminate()

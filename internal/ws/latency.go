@@ -16,7 +16,7 @@ func sendPingMessages(player *game.Network) {
 	for {
 		select {
 		case <-player.Ctx.Done():
-			slog.Info("Stopping ping messages", slog.String("name", player.Info.Name))
+			slog.Info("Stopping ping messages", slog.String("name", player.GameInfo.Name))
 			return
 
 		case <-time.After(5 * time.Second):
