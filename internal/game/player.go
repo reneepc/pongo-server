@@ -19,8 +19,8 @@ type Player struct {
 	inputQueue chan PlayerInput
 }
 
-func NewPlayer(network *Network, side geometry.Side, screenWidth, screenHeight float64) *Player {
-	basePlayer := player.NewNetwork(network.Name, side, screenWidth, screenHeight)
+func NewPlayer(network *Network, side geometry.Side) *Player {
+	basePlayer := player.NewNetwork(network.PlayerInfo.Name, side, float64(network.PlayerInfo.ScreenWidth), float64(network.PlayerInfo.ScreenHeight))
 
 	player := &Player{
 		basePlayer: basePlayer,

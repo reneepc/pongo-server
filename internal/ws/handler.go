@@ -33,7 +33,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var playerInfo PlayerInfo
+	var playerInfo game.PlayerInfo
 	if err := conn.ReadJSON(&playerInfo); err != nil {
 		err := conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Failed to read player info"), time.Now().Add(time.Second))
 		if err != nil {
@@ -45,7 +45,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("New player connected", slog.String("name", playerInfo.Name))
 
-	newPlayer := game.NewNetwork(conn, playerInfo.Name)
+	newPlayer := game.NewNetwork(conn, playerInfo)
 
 	s.measureLatency(newPlayer)
 	s.handleClosedConnection(newPlayer)
@@ -55,7 +55,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleClosedConnection(player *game.Network) {
 	player.Conn.SetCloseHandler(func(code int, text string) error {
-		slog.Info("Connection closed", slog.String("name", player.Name))
+		slog.Info("Connection closed", slog.String("name", player.PlayerInfo.Name), slog.Int("code", code), slog.String("text", text))
 		player.Cancel()
 		s.PlayerPool.RemovePlayer(player)
 		return nil

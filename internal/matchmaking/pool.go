@@ -77,8 +77,8 @@ func (p *PlayerPool) StartMatchmaking() {
 }
 
 func startNewGameSession(p1, p2 *game.Network) {
-	player1 := game.NewPlayer(p1, geometry.Left, game.ScreenWidth, game.ScreenHeight)
-	player2 := game.NewPlayer(p2, geometry.Right, game.ScreenWidth, game.ScreenHeight)
+	player1 := game.NewPlayer(p1, geometry.Left)
+	player2 := game.NewPlayer(p2, geometry.Right)
 
 	session := game.NewGameSession(player1, player2)
 

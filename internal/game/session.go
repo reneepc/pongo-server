@@ -80,14 +80,14 @@ func (session *GameSession) broadcastGameState() {
 	}
 
 	session.player1.Network.Send(GameState{
-		BallPosition: session.ball.Position(),
-		Current:      player1,
-		Opponent:     player2,
+		Ball:     ballState(session.ball),
+		Current:  player1,
+		Opponent: player2,
 	})
 	session.player2.Network.Send(GameState{
-		BallPosition: session.ball.Position(),
-		Current:      player2,
-		Opponent:     player1,
+		Ball:     ballState(session.ball),
+		Current:  player2,
+		Opponent: player1,
 	})
 }
 
@@ -101,7 +101,7 @@ func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
 		remainingPlayer = session.player1
 	}
 
-	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.Name))
+	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.PlayerInfo.Name))
 
 	remainingPlayer.Network.opponentDisconnect()
 	remainingPlayer.Terminate()

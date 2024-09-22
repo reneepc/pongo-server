@@ -11,7 +11,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/reneepc/pongo-server/internal/game"
-	"github.com/reneepc/pongo-server/internal/ws"
 )
 
 func main() {
@@ -36,7 +35,7 @@ func main() {
 		return nil
 	})
 
-	playerInfo := ws.PlayerInfo{Name: *playerName}
+	playerInfo := game.PlayerInfo{Name: *playerName}
 	if err := conn.WriteJSON(playerInfo); err != nil {
 		slog.Error("Failed to send player info", slog.Any("error", err))
 		return

@@ -1,5 +1,5 @@
-github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.8 h1:/m4uWkBihGFynZKXosj4lWYZ5laVRcY+cxVT3LAV4Rs=
-github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.8/go.mod h1:z92BCXwvEfkj1O93qmTYRqkDpnEe1ScZj2vNxW5o4Oo=
+github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.9 h1:nmnl18v2JHQPZ43Smf2X/yWAqoHoHFA5OFyLtyrBzaw=
+github.com/gandarez/pong-multiplayer-go v1.0.0-alpha.9/go.mod h1:z92BCXwvEfkj1O93qmTYRqkDpnEe1ScZj2vNxW5o4Oo=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
