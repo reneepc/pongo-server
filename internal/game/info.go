@@ -12,7 +12,7 @@ type PlayerInfo struct {
 	Level        int    `json:"level"`
 	ScreenWidth  int    `json:"screen_width"`
 	ScreenHeight int    `json:"screen_height"`
-	MaxScore     int    `json:"max_score"`
+	MaxScore     int8   `json:"max_score"`
 }
 
 func (p PlayerInfo) Validate() error {

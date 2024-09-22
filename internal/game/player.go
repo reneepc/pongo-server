@@ -12,8 +12,8 @@ import (
 const defaultSpeed = 4
 
 type Player struct {
+	*Network
 	basePlayer player.Player
-	Network    *Network
 	side       geometry.Side
 	score      int8
 	inputQueue chan PlayerInput

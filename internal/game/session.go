@@ -10,12 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	MaxScore     = 10
-	ScreenWidth  = 640
-	ScreenHeight = 480
-)
-
 type GameSession struct {
 	ID      string
 	player1 *Player
@@ -116,14 +110,14 @@ func (session *GameSession) handleScore(scorer geometry.Side) {
 
 	session.resetBall(scorer)
 
-	if session.player1.score == MaxScore || session.player2.score == MaxScore {
+	if session.player1.score == session.player1.MaxScore || session.player2.score == session.player2.MaxScore {
 		session.ticker.Stop()
 		session.endGame()
 	}
 }
 
 func (session *GameSession) endGame() {
-	if session.player1.score == MaxScore {
+	if session.player1.score == session.player1.MaxScore {
 		session.player1.Won()
 		session.player2.Lost()
 	} else {

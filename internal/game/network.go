@@ -18,7 +18,7 @@ type Network struct {
 	LastPingTime time.Time          `json:"-"`
 	Ctx          context.Context    `json:"-"`
 	Cancel       context.CancelFunc `json:"-"`
-	PlayerInfo   PlayerInfo         `json:"-"`
+	PlayerInfo
 }
 
 func NewNetwork(conn *websocket.Conn, playerInfo PlayerInfo) *Network {
