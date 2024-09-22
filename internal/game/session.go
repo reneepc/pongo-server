@@ -20,7 +20,7 @@ type GameSession struct {
 	ID      string
 	player1 *Player
 	player2 *Player
-	ball    *ball.Ball
+	ball    ball.Ball
 	level   level.Level
 	ticker  *time.Ticker
 }
@@ -30,7 +30,7 @@ func NewGameSession(player1 *Player, player2 *Player) *GameSession {
 		ID:      uuid.NewString(),
 		player1: player1,
 		player2: player2,
-		ball:    ball.New(geometry.Left, ScreenWidth, ScreenHeight, level.Medium),
+		ball:    ball.NewNetwork(),
 		level:   level.Medium,
 	}
 }

@@ -12,7 +12,7 @@ import (
 const defaultSpeed = 4
 
 type Player struct {
-	basePlayer *player.Player
+	basePlayer player.Player
 	Network    *Network
 	side       geometry.Side
 	score      int8
@@ -20,7 +20,7 @@ type Player struct {
 }
 
 func NewPlayer(network *Network, side geometry.Side, screenWidth, screenHeight float64) *Player {
-	basePlayer := player.New(network.Name, side, screenWidth, screenHeight, 10)
+	basePlayer := player.NewNetwork(network.Name, side, screenWidth, screenHeight)
 
 	player := &Player{
 		basePlayer: basePlayer,
