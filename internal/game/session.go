@@ -33,6 +33,8 @@ func (session *GameSession) Start() {
 	session.ticker = time.NewTicker(time.Second / 60)
 	defer session.ticker.Stop()
 
+	session.ready()
+
 	for {
 		select {
 		case <-session.player1.Network.Ctx.Done():
@@ -45,6 +47,17 @@ func (session *GameSession) Start() {
 			session.broadcastGameState()
 		}
 	}
+}
+
+func (session *GameSession) ready() {
+	readyMessage := struct {
+		Ready bool `json:"ready"`
+	}{
+		Ready: true,
+	}
+
+	go session.player1.Network.Send(readyMessage)
+	go session.player2.Network.Send(readyMessage)
 }
 
 func (session *GameSession) update() {

@@ -43,13 +43,16 @@ func (n *Network) opponentDisconnect() {
 	n.Conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Opponent disconnected"), time.Now().Add(time.Second))
 }
 
-func (n *Network) Send(data any) {
+func (n *Network) Send(data any) error {
 	n.mutex.Lock()
 	defer n.mutex.Unlock()
 
 	if err := n.Conn.WriteJSON(data); err != nil {
 		slog.Error("Error writing to player", slog.Any("error", err))
+		return err
 	}
+
+	return nil
 }
 
 func (n *Network) Terminate() {
