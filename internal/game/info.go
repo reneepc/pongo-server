@@ -7,7 +7,7 @@ import (
 
 var ErrPlayerInfoRequired = errors.New("invalid player info")
 
-type PlayerInfo struct {
+type Info struct {
 	Name         string `json:"name"`
 	Level        int    `json:"level"`
 	ScreenWidth  int    `json:"screen_width"`
@@ -15,7 +15,7 @@ type PlayerInfo struct {
 	MaxScore     int8   `json:"max_score"`
 }
 
-func (p PlayerInfo) Validate() error {
+func (p Info) Validate() error {
 	if p.Name == "" {
 		return ErrPlayerInfoRequired
 	}
@@ -23,15 +23,15 @@ func (p PlayerInfo) Validate() error {
 	return nil
 }
 
-func PlayerInfoFromMsg(msg []byte) (PlayerInfo, error) {
-	var playerInfo PlayerInfo
-	if err := json.Unmarshal(msg, &playerInfo); err != nil {
-		return PlayerInfo{}, err
+func PlayerInfoFromMsg(msg []byte) (Info, error) {
+	var info Info
+	if err := json.Unmarshal(msg, &info); err != nil {
+		return Info{}, err
 	}
 
-	if err := playerInfo.Validate(); err != nil {
-		return PlayerInfo{}, err
+	if err := info.Validate(); err != nil {
+		return Info{}, err
 	}
 
-	return playerInfo, nil
+	return info, nil
 }
