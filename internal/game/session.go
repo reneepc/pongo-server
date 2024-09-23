@@ -19,6 +19,13 @@ type GameSession struct {
 	ticker  *time.Ticker
 }
 
+type ReadyMessage struct {
+	Ready        bool          `json:"ready"`
+	Name         string        `json:"name"`
+	OpponentName string        `json:"opponent_name"`
+	Side         geometry.Side `json:"side"`
+}
+
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
 	var nextSide geometry.Side
 	if player1.side == geometry.Left {
@@ -57,14 +64,18 @@ func (session *GameSession) Start() {
 }
 
 func (session *GameSession) ready() {
-	readyMessage := struct {
-		Ready bool `json:"ready"`
-	}{
+	go session.player1.Network.Send(ReadyMessage{
 		Ready: true,
-	}
+		Name:  session.player1.PlayerName,
+		Side:  session.player1.side,
+	})
+	go session.player2.Network.Send(ReadyMessage{
+		Ready: true,
+		Name:  session.player2.PlayerName,
+		Side:  session.player2.side,
+	})
 
-	go session.player1.Network.Send(readyMessage)
-	go session.player2.Network.Send(readyMessage)
+	slog.Info("Game started", slog.String("session_id", session.ID), slog.Any("player1", session.player1), slog.Any("player2", session.player2))
 }
 
 func (session *GameSession) update() {
