@@ -108,16 +108,23 @@ func (session *GameSession) broadcastGameState() {
 		Ping:      session.player2.Network.Latency.Milliseconds(),
 	}
 
-	session.player1.Network.Send(GameState{
+	err := session.player1.Network.Send(GameState{
 		Ball:     ballState(session.ball),
 		Current:  player1,
 		Opponent: player2,
 	})
-	session.player2.Network.Send(GameState{
+	if err != nil {
+		slog.Error("Error sending game state to player 1", slog.Any("error", err), slog.Any("player", session.player1))
+	}
+
+	err = session.player2.Network.Send(GameState{
 		Ball:     ballState(session.ball),
 		Current:  player2,
 		Opponent: player1,
 	})
+	if err != nil {
+		slog.Error("Error sending game state to player 2", slog.Any("error", err), slog.Any("player", session.player2))
+	}
 }
 
 func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
