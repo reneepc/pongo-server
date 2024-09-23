@@ -18,6 +18,7 @@ type BallState struct {
 }
 
 type PlayerState struct {
+	Name      string        `json:"name"`
 	PositionY float64       `json:"position_y"`
 	Side      geometry.Side `json:"side"`
 	Score     int8          `json:"score"`

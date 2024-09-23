@@ -80,6 +80,7 @@ func (session *GameSession) update() {
 
 func (session *GameSession) broadcastGameState() {
 	player1 := PlayerState{
+		Name:      session.player1.PlayerName,
 		PositionY: session.player1.basePlayer.Position().Y,
 		Score:     session.player1.score,
 		Side:      session.player1.side,
@@ -87,6 +88,7 @@ func (session *GameSession) broadcastGameState() {
 	}
 
 	player2 := PlayerState{
+		Name:      session.player2.PlayerName,
 		PositionY: session.player2.basePlayer.Position().Y,
 		Score:     session.player2.score,
 		Side:      session.player2.side,
