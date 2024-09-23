@@ -115,7 +115,7 @@ func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
 		remainingPlayer = session.player1
 	}
 
-	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.GameInfo.Name))
+	slog.Warn("Player disconnected", slog.String("name", disconnectedPlayer.Network.GameInfo.PlayerName))
 
 	remainingPlayer.Network.opponentDisconnect()
 	remainingPlayer.Terminate()

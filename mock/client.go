@@ -35,7 +35,7 @@ func main() {
 		return nil
 	})
 
-	info := game.GameInfo{Name: *playerName}
+	info := game.GameInfo{PlayerName: *playerName}
 	if err := conn.WriteJSON(info); err != nil {
 		slog.Error("Failed to send player info", slog.Any("error", err))
 		return

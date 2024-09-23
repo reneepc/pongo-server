@@ -46,7 +46,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slog.Info("New player connected", slog.String("name", info.Name))
+	slog.Info("New player connected", slog.String("name", info.PlayerName))
 
 	newPlayer := game.NewNetwork(conn, info)
 
@@ -58,7 +58,7 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleClosedConnection(player *game.Network) {
 	player.Conn.SetCloseHandler(func(code int, text string) error {
-		slog.Info("Connection closed", slog.String("name", player.GameInfo.Name), slog.Int("code", code), slog.String("text", text))
+		slog.Info("Connection closed", slog.String("name", player.GameInfo.PlayerName), slog.Int("code", code), slog.String("text", text))
 		player.Cancel()
 		s.PlayerPool.RemovePlayer(player)
 		return nil

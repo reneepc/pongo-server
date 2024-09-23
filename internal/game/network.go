@@ -76,6 +76,6 @@ func (n *Network) Ping() {
 	n.LastPingTime = time.Now()
 
 	if err := n.Conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(time.Second)); err != nil {
-		slog.Error("Error while sending ping to player", slog.Any("error", err), slog.String("name", n.GameInfo.Name))
+		slog.Error("Error while sending ping to player", slog.Any("error", err), slog.String("name", n.GameInfo.PlayerName))
 	}
 }

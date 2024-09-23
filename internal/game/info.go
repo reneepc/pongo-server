@@ -8,7 +8,7 @@ import (
 var ErrPlayerInfoRequired = errors.New("invalid player info")
 
 type GameInfo struct {
-	Name             string `json:"player_name"`
+	PlayerName       string `json:"player_name"`
 	Level            int    `json:"level"`
 	ScreenWidth      int    `json:"screen_width"`
 	ScreenHeight     int    `json:"screen_height"`
@@ -17,7 +17,7 @@ type GameInfo struct {
 }
 
 func (p GameInfo) Validate() error {
-	if p.Name == "" {
+	if p.PlayerName == "" {
 		return ErrPlayerInfoRequired
 	}
 
