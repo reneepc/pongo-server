@@ -65,14 +65,16 @@ func (session *GameSession) Start() {
 
 func (session *GameSession) ready() {
 	go session.player1.Network.Send(ReadyMessage{
-		Ready: true,
-		Name:  session.player1.PlayerName,
-		Side:  session.player1.side,
+		Ready:        true,
+		Name:         session.player1.PlayerName,
+		OpponentName: session.player2.PlayerName,
+		Side:         session.player1.side,
 	})
 	go session.player2.Network.Send(ReadyMessage{
-		Ready: true,
-		Name:  session.player2.PlayerName,
-		Side:  session.player2.side,
+		Ready:        true,
+		Name:         session.player2.PlayerName,
+		OpponentName: session.player1.PlayerName,
+		Side:         session.player2.side,
 	})
 
 	slog.Info("Game started", slog.String("session_id", session.ID), slog.Any("player1", session.player1), slog.Any("player2", session.player2))
