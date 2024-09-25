@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/reneepc/pongo-server/internal/server"
+	"github.com/reneepc/pongo-server/internal/httpserver"
 	"github.com/reneepc/pongo-server/internal/ws"
 )
 
@@ -24,7 +24,7 @@ func main() {
 
 	slog.Info("Starting Pong Multiplayer Server", slog.String("port", port))
 
-	httpServer := server.New()
+	httpServer := httpserver.New()
 	wsServer := ws.New()
 
 	go func() {
@@ -41,7 +41,7 @@ func main() {
 	shutdown(ctx, httpServer, wsServer)
 }
 
-func shutdown(ctx context.Context, s *server.Server, wsServer *ws.Server) {
+func shutdown(ctx context.Context, s *httpserver.Server, wsServer *ws.Server) {
 	quitSignal := make(chan os.Signal, 1)
 	signal.Notify(quitSignal, os.Interrupt, syscall.SIGTERM)
 

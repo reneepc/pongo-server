@@ -1,4 +1,4 @@
-package server
+package httpserver
 
 import (
 	"context"
@@ -27,6 +27,8 @@ func New() *Server {
 
 func (s *Server) Start(addr string, wsServer *ws.Server) error {
 	http.HandleFunc("/multiplayer", wsServer.HandleConnections)
+	http.HandleFunc("/spectate", wsServer.HandleSpectatorConnections)
+	http.HandleFunc("/sessions", s.handleSessions)
 
 	s.httpServer.Addr = addr
 

@@ -43,3 +43,14 @@ func (sm *SessionManager) Session(id string) *GameSession {
 
 	return sm.Sessions[id]
 }
+
+func (sm *SessionManager) GetSessions() []*GameSession {
+	sm.Lock()
+	defer sm.Unlock()
+
+	sessions := make([]*GameSession, 0, len(sm.Sessions))
+	for _, session := range sm.Sessions {
+		sessions = append(sessions, session)
+	}
+	return sessions
+}
