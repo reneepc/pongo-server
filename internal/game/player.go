@@ -11,6 +11,13 @@ import (
 
 const defaultSpeed = 4
 
+// Player unifies all multiplayer concerns about a player in the game
+//
+// The physics concerns are handled by the basePlayer, which shares the local
+// update logic with the client's local player processing.
+//
+// The inputQueue streamlines the input processing, allowing the game loop to
+// process the player inputs in a controlled manner.
 type Player struct {
 	*Network
 	basePlayer player.Player

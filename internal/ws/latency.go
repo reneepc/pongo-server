@@ -8,7 +8,10 @@ import (
 )
 
 func (s Server) measureLatency(player *game.Network) {
+	// Set the receiver of client's response to the ping message.
 	handlePong(player)
+
+	// Send periodically ping messages to the player's client.
 	go sendPingMessages(player)
 }
 

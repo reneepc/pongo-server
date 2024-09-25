@@ -10,6 +10,9 @@ import (
 	"github.com/reneepc/pongo-server/internal/matchmaking"
 )
 
+// Server is the WebSocket server
+//
+// It is responsible for handling incoming connections and managing the player pool.
 type Server struct {
 	PlayerPool *matchmaking.PlayerPool
 	upgrader   websocket.Upgrader
@@ -27,15 +30,18 @@ func New() *Server {
 }
 
 func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
+	// CORS
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
+	// Upgrade HTTP connection to WebSocket
 	conn, err := s.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		slog.Error("Failed to upgrade connection", slog.Any("error", err))
 		return
 	}
 
+	// Wait for initial player info
 	var info game.GameInfo
 	if err := conn.ReadJSON(&info); err != nil {
 		err := conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Failed to read player info"), time.Now().Add(time.Second))
@@ -50,7 +56,10 @@ func (s *Server) HandleConnections(w http.ResponseWriter, r *http.Request) {
 
 	newPlayer := game.NewNetwork(conn, info)
 
+	// Starts ping measurement
 	s.measureLatency(newPlayer)
+
+	// Setup connection close handler and context cancellation on disconnect
 	s.handleClosedConnection(newPlayer)
 
 	s.PlayerPool.AddPlayer(newPlayer)

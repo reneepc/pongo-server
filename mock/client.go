@@ -13,6 +13,7 @@ import (
 	"github.com/reneepc/pongo-server/internal/game"
 )
 
+// Mock server intended to simulate a player connecting to the WebSocket server
 func main() {
 	serverAddr := flag.String("server", "localhost:8080", "The WebSocket server address")
 	playerName := flag.String("name", "TestPlayer", "The player's name")

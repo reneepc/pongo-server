@@ -4,6 +4,10 @@ import (
 	"log/slog"
 )
 
+// PlayerInput stores the player's input
+//
+// It's supposed to be received from the client only when there is
+// an effective action from the player (up or down)
 type PlayerInput struct {
 	Up   bool `json:"up"`
 	Down bool `json:"down"`

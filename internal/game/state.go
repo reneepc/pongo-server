@@ -5,6 +5,11 @@ import (
 	"github.com/gandarez/pong-multiplayer-go/pkg/geometry"
 )
 
+// GameState is a snapshot of the game physics at a given time.
+//
+// The game state is used to synchronize the game between the server and the clients.
+// At a constant rate, the server sends state updates to the clients in response to the client's inputs.
+// The clients use the state updates to render the game and predict the game physics.
 type GameState struct {
 	Ball     BallState   `json:"ball"`
 	Current  PlayerState `json:"current"`

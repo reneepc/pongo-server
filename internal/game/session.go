@@ -10,6 +10,13 @@ import (
 	"github.com/google/uuid"
 )
 
+// GameSession represents a multiplayer session between two players
+//
+// It contains physics related objects: the ball and the players, the
+// game server clock (ticker), and selected game level.
+//
+// The ID identifies a session for the purposes of listing, streaming, and
+// replaying a given session.
 type GameSession struct {
 	ID      string
 	player1 *Player
@@ -37,6 +44,13 @@ func NewGameSession(player1 *Player, player2 *Player) *GameSession {
 	}
 }
 
+// Start begins the game loop
+//
+// The game is processed in a fixed time step loop, given by the server clock (ticker).
+// The game loop process the player inputs, updates the game physics, broadcasts the
+// game state to the players.
+//
+// It also handles players disconnections, scores, and game ending.
 func (session *GameSession) Start() {
 	session.ticker = time.NewTicker(time.Second / 60)
 	defer session.ticker.Stop()

@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// Network stores a player's websocket related information
 type Network struct {
 	Conn         *websocket.Conn    `json:"-"`
 	mutex        sync.Mutex         `json:"-"`
@@ -36,13 +37,7 @@ func NewNetwork(conn *websocket.Conn, info GameInfo) *Network {
 	return player
 }
 
-func (n *Network) opponentDisconnect() {
-	n.mutex.Lock()
-	defer n.mutex.Unlock()
-
-	n.Conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Opponent disconnected"), time.Now().Add(time.Second))
-}
-
+// Send is responsible for marshalling and sending data to the player's client
 func (n *Network) Send(data any) error {
 	n.mutex.Lock()
 	defer n.mutex.Unlock()
@@ -55,6 +50,7 @@ func (n *Network) Send(data any) error {
 	return nil
 }
 
+// Terminate is responsible for closing the player's connection and canceling the connection's context
 func (n *Network) Terminate() {
 	n.mutex.Lock()
 	defer n.mutex.Unlock()
@@ -69,6 +65,7 @@ func (n *Network) Terminate() {
 	n.Cancel()
 }
 
+// Ping is responsible for sending messages to measure the latency between the server and the player
 func (n *Network) Ping() {
 	n.mutex.Lock()
 	defer n.mutex.Unlock()
@@ -78,4 +75,11 @@ func (n *Network) Ping() {
 	if err := n.Conn.WriteControl(websocket.PingMessage, nil, time.Now().Add(time.Second)); err != nil {
 		slog.Error("Error while sending ping to player", slog.Any("error", err), slog.String("name", n.GameInfo.PlayerName))
 	}
+}
+
+func (n *Network) opponentDisconnect() {
+	n.mutex.Lock()
+	defer n.mutex.Unlock()
+
+	n.Conn.WriteControl(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Opponent disconnected"), time.Now().Add(time.Second))
 }

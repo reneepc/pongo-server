@@ -8,6 +8,7 @@ import (
 	"github.com/reneepc/pongo-server/internal/game"
 )
 
+// PlayerPool is the pool of unmatched players waiting in the match queue
 type PlayerPool struct {
 	sync.Mutex
 	Players     []*game.Network
@@ -49,6 +50,7 @@ func (p *PlayerPool) RemovePlayer(player *game.Network) {
 	}
 }
 
+// FindMatch finds a match for two players and removes them from the pool
 func (p *PlayerPool) FindMatch() (*game.Network, *game.Network) {
 	p.Lock()
 	defer p.Unlock()
@@ -63,6 +65,13 @@ func (p *PlayerPool) FindMatch() (*game.Network, *game.Network) {
 	return p1, p2
 }
 
+// StartMatchmaking is responsible for constantly checking the match queue for players
+// and starting a new game session when two players are found.
+//
+// The matchSignal channel is used to trigger the matchmaking process and it's supposed to be
+// triggered every time a new player joins the pool. Otherwise, it will block.
+//
+// The matching process only considers the first two players in the queue.
 func (p *PlayerPool) StartMatchmaking() {
 	for {
 		<-p.matchSignal
