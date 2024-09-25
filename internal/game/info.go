@@ -7,6 +7,10 @@ import (
 
 var ErrPlayerInfoRequired = errors.New("invalid player info")
 
+// GameInfo represents the information sent by the player when connecting to the server.
+//
+// It contains information necessary to identify the player and set the basis for the
+// physics simulation.
 type GameInfo struct {
 	PlayerName       string `json:"player_name"`
 	Level            int    `json:"level"`
