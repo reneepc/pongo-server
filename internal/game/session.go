@@ -29,9 +29,6 @@ type GameSession struct {
 	// Spectate
 	spectators     []*Network
 	spectatorMutex sync.Mutex
-	stateBuffer    []GameState
-	delayFrames    int
-	bufferSize     int
 }
 
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
@@ -41,11 +38,6 @@ func NewGameSession(player1 *Player, player2 *Player) *GameSession {
 		Player2: player2,
 		ball:    ball.NewLocal(float64(player1.ScreenWidth), float64(player1.ScreenHeight), level.Medium),
 		level:   level.Medium,
-
-		// Spectate
-		bufferSize:  20,
-		delayFrames: 10,
-		stateBuffer: make([]GameState, 0, 20),
 	}
 }
 
@@ -74,7 +66,7 @@ func (session *GameSession) Start() {
 
 			session.broadcastGameState()
 
-			session.broadcastToSpectators()
+			session.broadcastToSpectators(session.currentGameState())
 
 			if session.gameEnded() {
 				session.ticker.Stop()
@@ -111,12 +103,6 @@ func (session *GameSession) update() {
 
 	if scored, goalSide := session.ball.CheckGoal(); scored {
 		session.handleScore(goalSide)
-	}
-
-	// Buffer game state for streaming
-	session.stateBuffer = append(session.stateBuffer, session.currentGameState())
-	if len(session.stateBuffer) > session.bufferSize {
-		session.stateBuffer = session.stateBuffer[1:]
 	}
 }
 
@@ -238,21 +224,11 @@ func (session *GameSession) currentGameState() GameState {
 	}
 }
 
-func (session *GameSession) broadcastToSpectators() {
+func (session *GameSession) broadcastToSpectators(gameState GameState) {
 	session.spectatorMutex.Lock()
 	defer session.spectatorMutex.Unlock()
 
-	if len(session.stateBuffer) == 0 {
-		return
-	}
-
-	if len(session.stateBuffer) < session.delayFrames {
-		return
-	}
-
-	delayedState := session.stateBuffer[len(session.stateBuffer)-session.delayFrames]
-
 	for _, spectator := range session.spectators {
-		spectator.Send(delayedState)
+		spectator.Send(gameState)
 	}
 }
