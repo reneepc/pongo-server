@@ -59,12 +59,10 @@ func (p *Player) ProcessInputs() {
 	for {
 		select {
 		case input := <-p.inputQueue:
-			switch {
-			case input.Up:
-				p.MoveUp()
-			case input.Down:
-				p.MoveDown()
-			}
+			p.basePlayer.Update(player.Input{
+				Up:   input.Up,
+				Down: input.Down,
+			})
 		default:
 			return
 		}
