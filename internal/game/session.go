@@ -183,6 +183,10 @@ func (session *GameSession) endGame() {
 		session.Player1.Lost()
 	}
 
+	for _, spectator := range session.spectators {
+		spectator.Terminate()
+	}
+
 	sessionManager.RemoveSession(session.ID)
 }
 
