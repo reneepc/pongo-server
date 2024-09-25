@@ -94,8 +94,8 @@ func (session *GameSession) update() {
 
 	session.ball.Update(session.player1.basePlayer.Bounds(), session.player2.basePlayer.Bounds())
 
-	if scored, scorer := session.ball.CheckGoal(); scored {
-		session.handleScore(scorer)
+	if scored, goalSide := session.ball.CheckGoal(); scored {
+		session.handleScore(goalSide)
 	}
 }
 
@@ -153,14 +153,14 @@ func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
 	remainingPlayer.Terminate()
 }
 
-func (session *GameSession) handleScore(scorer geometry.Side) {
-	if session.player1.side == scorer {
-		session.player1.score++
-	} else {
+func (session *GameSession) handleScore(goalSide geometry.Side) {
+	if session.player1.side == goalSide {
 		session.player2.score++
+	} else {
+		session.player1.score++
 	}
 
-	session.resetBall(scorer)
+	session.resetBall(goalSide)
 }
 
 func (session *GameSession) gameEnded() bool {
