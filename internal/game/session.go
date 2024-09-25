@@ -28,18 +28,11 @@ type ReadyMessage struct {
 }
 
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
-	var nextSide geometry.Side
-	if player1.side == geometry.Left {
-		nextSide = geometry.Right
-	} else {
-		nextSide = geometry.Left
-	}
-
 	return &GameSession{
 		ID:      uuid.NewString(),
 		player1: player1,
 		player2: player2,
-		ball:    ball.NewLocal(nextSide, float64(player1.ScreenWidth), float64(player1.ScreenHeight), level.Medium),
+		ball:    ball.NewLocal(float64(player1.ScreenWidth), float64(player1.ScreenHeight), level.Medium),
 		level:   level.Medium,
 	}
 }
@@ -182,9 +175,9 @@ func (session *GameSession) endGame() {
 
 func (session *GameSession) resetBall(scorer geometry.Side) {
 	if scorer == geometry.Left {
-		session.ball = session.ball.Reset(geometry.Right)
+		session.ball = session.ball.Reset()
 	} else {
-		session.ball = session.ball.Reset(geometry.Left)
+		session.ball = session.ball.Reset()
 	}
 }
 
