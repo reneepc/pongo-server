@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -17,9 +18,11 @@ func main() {
 		port = "8080"
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 
-	slog.Info("Starting Pong Multiplyaer Server", slog.String("port", port))
+	slog.Info("Starting Pong Multiplayer Server", slog.String("port", port))
 
 	httpServer := server.New()
 	wsServer := ws.New()
@@ -29,18 +32,23 @@ func main() {
 		err := httpServer.Start(host, wsServer)
 		if err != nil {
 			slog.Error("Error starting server", slog.Any("error", err))
-			os.Exit(1)
+			cancel()
+
+			return
 		}
 	}()
 
-	shutdown(httpServer, wsServer)
+	shutdown(ctx, httpServer, wsServer)
 }
 
-func shutdown(s *server.Server, wsServer *ws.Server) {
+func shutdown(ctx context.Context, s *server.Server, wsServer *ws.Server) {
 	quitSignal := make(chan os.Signal, 1)
 	signal.Notify(quitSignal, os.Interrupt, syscall.SIGTERM)
 
-	<-quitSignal
+	select {
+	case <-quitSignal:
+	case <-ctx.Done():
+	}
 
 	slog.Info("Shutting down server")
 	for _, player := range wsServer.PlayerPool.Players {
