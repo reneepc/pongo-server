@@ -43,9 +43,9 @@ func NewGameSession(player1 *Player, player2 *Player) *GameSession {
 		level:   level.Medium,
 
 		// Spectate
-		bufferSize:  60,
-		delayFrames: 30,
-		stateBuffer: make([]GameState, 0, 60),
+		bufferSize:  20,
+		delayFrames: 10,
+		stateBuffer: make([]GameState, 0, 20),
 	}
 }
 
