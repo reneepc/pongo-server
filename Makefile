@@ -8,7 +8,7 @@ build-server:
 	go build -o $(BUILD_DIR)/$(BINARY_NAME_SERVER) main.go
 
 run-server:
-	go run main.go --port=8080
+	go run main.go
 
 build-client:
 	go build -o $(BUILD_DIR)/$(BINARY_NAME_CLIENT) mock/client.go
