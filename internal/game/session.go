@@ -26,14 +26,6 @@ type GameSession struct {
 	ticker  *time.Ticker
 }
 
-type ReadyMessage struct {
-	Ready        bool          `json:"ready"`
-	Name         string        `json:"name"`
-	OpponentName string        `json:"opponent_name"`
-	Side         geometry.Side `json:"side"`
-	OpponentSide geometry.Side `json:"opponent_side"`
-}
-
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
 	return &GameSession{
 		ID:      uuid.NewString(),
