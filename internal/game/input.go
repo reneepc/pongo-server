@@ -2,8 +2,6 @@ package game
 
 import (
 	"log/slog"
-
-	"github.com/gorilla/websocket"
 )
 
 type PlayerInput struct {
@@ -30,13 +28,9 @@ func (player *Player) StartInputReader() {
 				var input PlayerInput
 				if err := player.Network.Conn.ReadJSON(&input); err != nil {
 					slog.Error("Error reading player input", slog.Any("error", err))
+					player.Terminate()
 
-					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-						player.Terminate()
-						return
-					}
-
-					continue
+					return
 				}
 
 				if !input.Up && !input.Down {
