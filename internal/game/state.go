@@ -23,6 +23,7 @@ type PlayerState struct {
 	Side      geometry.Side `json:"side"`
 	Score     int8          `json:"score"`
 	Ping      int64         `json:"ping"`
+	Winner    bool          `json:"winner,omitempty"`
 }
 
 func ballState(ball ball.Ball) BallState {

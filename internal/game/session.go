@@ -59,7 +59,13 @@ func (session *GameSession) Start() {
 			session.handleDisconnection(session.player2)
 		case <-session.ticker.C:
 			session.update()
+
 			session.broadcastGameState()
+
+			if session.gameEnded() {
+				session.ticker.Stop()
+				session.endGame()
+			}
 		}
 	}
 }
@@ -101,6 +107,7 @@ func (session *GameSession) broadcastGameState() {
 		Score:     session.player1.score,
 		Side:      session.player1.side,
 		Ping:      session.player1.Network.Latency.Milliseconds(),
+		Winner:    session.winner(session.player1),
 	}
 
 	player2 := PlayerState{
@@ -109,6 +116,7 @@ func (session *GameSession) broadcastGameState() {
 		Score:     session.player2.score,
 		Side:      session.player2.side,
 		Ping:      session.player2.Network.Latency.Milliseconds(),
+		Winner:    session.winner(session.player2),
 	}
 
 	err := session.player1.Network.Send(GameState{
@@ -154,11 +162,10 @@ func (session *GameSession) handleScore(scorer geometry.Side) {
 	}
 
 	session.resetBall(scorer)
+}
 
-	if session.player1.score == session.player1.MaxScore || session.player2.score == session.player2.MaxScore {
-		session.ticker.Stop()
-		session.endGame()
-	}
+func (session *GameSession) gameEnded() bool {
+	return session.winner(session.player1) || session.winner(session.player2)
 }
 
 func (session *GameSession) endGame() {
@@ -179,4 +186,8 @@ func (session *GameSession) resetBall(scorer geometry.Side) {
 	} else {
 		session.ball = session.ball.Reset(geometry.Left)
 	}
+}
+
+func (session *GameSession) winner(player *Player) bool {
+	return player.score >= player.MaxScore
 }
