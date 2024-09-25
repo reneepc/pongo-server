@@ -158,6 +158,12 @@ func (session *GameSession) handleDisconnection(disconnectedPlayer *Player) {
 
 	remainingPlayer.Network.opponentDisconnect()
 	remainingPlayer.Terminate()
+
+	for _, spectator := range session.spectators {
+		spectator.Terminate()
+	}
+
+	sessionManager.RemoveSession(session.ID)
 }
 
 func (session *GameSession) handleScore(goalSide geometry.Side) {
