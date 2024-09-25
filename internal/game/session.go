@@ -24,6 +24,7 @@ type ReadyMessage struct {
 	Name         string        `json:"name"`
 	OpponentName string        `json:"opponent_name"`
 	Side         geometry.Side `json:"side"`
+	OpponentSide geometry.Side `json:"opponent_side"`
 }
 
 func NewGameSession(player1 *Player, player2 *Player) *GameSession {
@@ -69,12 +70,14 @@ func (session *GameSession) ready() {
 		Name:         session.player1.PlayerName,
 		OpponentName: session.player2.PlayerName,
 		Side:         session.player1.side,
+		OpponentSide: session.player2.side,
 	})
 	go session.player2.Network.Send(ReadyMessage{
 		Ready:        true,
 		Name:         session.player2.PlayerName,
 		OpponentName: session.player1.PlayerName,
 		Side:         session.player2.side,
+		OpponentSide: session.player1.side,
 	})
 
 	slog.Info("Game started", slog.String("session_id", session.ID), slog.Any("player1", session.player1), slog.Any("player2", session.player2))
